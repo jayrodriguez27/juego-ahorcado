@@ -2,9 +2,14 @@ from tkinter import *
 from random import randint
 from tkinter.messagebox import showinfo
 
+
 letrasUsadas = []
 intentos = 7
 letrasAcertadas = 0
+
+
+USERNAME = "jayko"
+PASSWORD = "furritos16"
 
 def colocarLetras():
     x = 50
@@ -52,47 +57,71 @@ def probarLetraFuncion():
     letraObtenida.set("")  
     print("Letras usadas (:):", letrasUsadas)  
 
-raiz = Tk()
-archivo = open('palabras.txt', 'r')
-conjuntoPalabras = list(archivo.read().split('\n'))
-palabra = conjuntoPalabras[randint(0, len(conjuntoPalabras) - 1)].lower()
+def iniciarJuego():
+    
+    global raiz, canvas, imagen_id, imagenes, guiones, letrasLabel, palabra, letraObtenida
 
-letraObtenida = StringVar()
+    raiz = Tk()
+    archivo = open('palabras.txt', 'r')
+    conjuntoPalabras = list(archivo.read().split('\n'))
+    palabra = conjuntoPalabras[randint(0, len(conjuntoPalabras) - 1)].lower()
 
+    letraObtenida = StringVar()
 
-raiz.config(width=1000, height=600, bg='blue', relief='groove', bd=10)
-raiz.geometry('1000x600')
-canvas = Canvas(raiz, width=100, height=600)
-canvas.pack(expand=True, fill='both')
-imagenes = [
-    PhotoImage(file='1.png'),
-    PhotoImage(file='2.png'),
-    PhotoImage(file='3.png'),
-    PhotoImage(file='4.png'),
-    PhotoImage(file='5.png'),
-    PhotoImage(file='6.png'),
-    PhotoImage(file='7.png'),
+    raiz.config(width=1000, height=600, bg='blue', relief='groove', bd=10)
+    raiz.geometry('1000x600')
+    canvas = Canvas(raiz, width=100, height=600)
+    canvas.pack(expand=True, fill='both')
+    imagenes = [
+        PhotoImage(file='1.png'),
+        PhotoImage(file='2.png'),
+        PhotoImage(file='3.png'),
+        PhotoImage(file='4.png'),
+        PhotoImage(file='5.png'),
+        PhotoImage(file='6.png'),
+        PhotoImage(file='7.png'),
+    ]
+    imagen_id = canvas.create_image(750, 300, image=imagenes[6])
+    Label(canvas, text='Introduce la letra', font=('Verdana', 24)).grid(row=0, column=0, padx=10, pady=10)
+    letra = Entry(canvas, width=1, font=('Verdana', 24), textvariable=letraObtenida)
+    letra.grid(row=0, column=1, padx=10, pady=10)
 
-]
-imagen_id = canvas.create_image(750, 300, image=imagenes[6])
-Label(canvas, text='Introduce la letra', font=('Verdana', 24)).grid(row=0, column=0, padx=10, pady=10)
-letra = Entry(canvas, width=1, font=('Verdana', 24), textvariable=letraObtenida)
-letra.grid(row=0, column=1, padx=10, pady=10)
+    probarletra = Button(canvas, text='Probar', bg='Gray', command=probarLetraFuncion)
+    probarletra.grid(row=1, column=0, pady=10)
 
-probarletra = Button(canvas, text='Probar', bg='Gray', command=probarLetraFuncion)
-probarletra.grid(row=1, column=0, pady=10)
+    letrasLabel = [Label(canvas, text=chr(j + 97), font=('Verdana', 20)) for j in range(26)]
+    colocarLetras()
 
+    guiones = [Label(canvas, text='_', font=('Verdana', 30)) for _ in palabra]
+    inicialX = 200
+    for i in range(len(palabra)):
+        guiones[i].place(x=inicialX, y=400)
+        inicialX += 50
 
-letrasLabel = [Label(canvas, text=chr(j + 97), font=('Verdana', 20)) for j in range(26)]
-colocarLetras()
+    raiz.mainloop()
 
+def verificarCredenciales():
+    if usuarioEntry.get() == USERNAME and contrasenaEntry.get() == PASSWORD:
+        loginWindow.destroy()  
+        iniciarJuego()  
+    else:
+        showinfo("Error", "Usuario o contraseña incorrectos")
 
-guiones = [Label(canvas, text='_', font=('Verdana', 30)) for _ in palabra]
-inicialX = 200
-for i in range(len(palabra)):
-    guiones[i].place(x=inicialX, y=400)
-    inicialX += 50
+loginWindow = Tk()
+loginWindow.title("Iniciar Sesion")
+loginWindow.geometry("300x200")
 
-raiz.mainloop()
+Label(loginWindow, text="Usuario:", font=('Verdana', 12)).pack(pady=10)
+usuarioEntry = Entry(loginWindow, font=('Verdana', 12))
+usuarioEntry.pack()
+
+Label(loginWindow, text="Contraseña:", font=('Verdana', 12)).pack(pady=10)
+contrasenaEntry = Entry(loginWindow, font=('Verdana', 12), show="*")
+contrasenaEntry.pack()
+
+Button(loginWindow, text="Iniciar sesión", command=verificarCredenciales).pack(pady=20)
+
+loginWindow.mainloop()
+
 
 
